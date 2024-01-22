@@ -1,4 +1,5 @@
 import 'dart:async';
+
 import 'dart:math';
 
 import 'package:flutter/material.dart';
@@ -19,11 +20,15 @@ class GameNotifier extends StateNotifier<GameState> {
     );
   }
 
-  void startGame() {
+  void startGame(BuildContext context) {
     state.snakePosition = [45, 65, 85, 105, 125];
-    const duration = Duration(microseconds: 300);
+    const duration = Duration(milliseconds: 300);
     Timer.periodic(duration, (Timer timer) {
       updateSnake();
+      if (gameOver()) {
+        timer.cancel();
+        showGameOverScreen(context);
+      }
     });
   }
 
@@ -64,6 +69,8 @@ class GameNotifier extends StateNotifier<GameState> {
         }
 
         break;
+
+      default:
     }
 
     if (state.snakePosition!.last == state.food) {
@@ -92,15 +99,22 @@ class GameNotifier extends StateNotifier<GameState> {
     showDialog(
       context: context,
       builder: (context) {
-        return AlertDialog(
-          title: Text("Game Over"),
-          content: Text("Your Score" + state.snakePosition!.length.toString()),
-          actions: [
-            FloatingActionButton(onPressed: () {
-              startGame();
-              Navigator.of(context).pop();
-            })
-          ],
+        return Container(
+          color: Colors.white,
+          child: AlertDialog(
+            title: const Text("Game Over"),
+            content:
+                Text("Your Score" + state.snakePosition!.length.toString()),
+            actions: [
+              FloatingActionButton(
+                onPressed: () {
+                  startGame(context);
+                  Navigator.of(context).pop();
+                },
+                child: const Text("Play Again"),
+              ),
+            ],
+          ),
         );
       },
     );

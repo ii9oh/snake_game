@@ -11,10 +11,13 @@ class GamePage extends ConsumerStatefulWidget {
 
 class _GamePageState extends ConsumerState<GamePage> {
   @override
+  @override
   Widget build(BuildContext context) {
     final state = ref.watch(gameProvider);
+    final controller = ref.read(gameProvider.notifier);
+
     return Scaffold(
-      backgroundColor: Colors.black,
+      backgroundColor: Colors.black26,
       body: Column(
         children: [
           Expanded(
@@ -33,15 +36,14 @@ class _GamePageState extends ConsumerState<GamePage> {
                   state.direction = 'left';
                 }
               },
-              child: Expanded(
+              child: Container(
                 child: GridView.builder(
                     physics: const NeverScrollableScrollPhysics(),
-                    shrinkWrap: true,
                     itemCount: state.numberOfSquare,
                     gridDelegate:
                         const SliverGridDelegateWithFixedCrossAxisCount(
                             crossAxisCount: 20),
-                    itemBuilder: (context, index) {
+                    itemBuilder: (BuildContext context, int index) {
                       if (state.snakePosition!.contains(index)) {
                         return Center(
                           child: Container(
@@ -61,7 +63,17 @@ class _GamePageState extends ConsumerState<GamePage> {
                           child: ClipRRect(
                             borderRadius: BorderRadius.circular(5),
                             child: Container(
-                              color: Colors.green,
+                              color: Colors.greenAccent,
+                            ),
+                          ),
+                        );
+                      } else {
+                        return Padding(
+                          padding: const EdgeInsets.all(2),
+                          child: ClipRRect(
+                            borderRadius: BorderRadius.circular(5),
+                            child: Container(
+                              color: Colors.grey[900],
                             ),
                           ),
                         );
@@ -69,7 +81,24 @@ class _GamePageState extends ConsumerState<GamePage> {
                     }),
               ),
             ),
-          )
+          ),
+          Padding(
+            padding: const EdgeInsets.only(bottom: 20, left: 20, right: 20),
+            child: Row(
+                mainAxisAlignment: MainAxisAlignment.spaceBetween,
+                children: [
+                  GestureDetector(
+                    onTap: () {
+                      controller.startGame(context);
+                      print("play");
+                    },
+                    child: const Text(
+                      "Start",
+                      style: TextStyle(fontSize: 39, color: Colors.white),
+                    ),
+                  )
+                ]),
+          ),
         ],
       ),
     );
